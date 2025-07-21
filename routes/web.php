@@ -1,9 +1,18 @@
 <?php
 
-use App\Http\Controllers\KelolaSiswaController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\GuestController;
+use App\Http\Controllers\RepotController;
+use App\Http\Controllers\LandingPageContoller;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\StudentController;
-use App\Models\Student;
+
+
+
+use App\Models\Person;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -16,24 +25,67 @@ use App\Models\Student;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
 
-Route::prefix('/data_siswa')->name('data_siswa.')->group(function(){
-    Route::get('data', [StudentController::class, 'index'])->name('data');
-    Route::get('/tambah', [StudentController::class, 'create'])->name('tambah');
-    Route::post('/tambah/proses', [StudentController::class, 'store'])->name('tambah.proses');
-    Route::get('/ubah/{id}', [StudentController::class, 'edit'])->name('ubah');
-    Route::patch('/ubah/{id}/proses', [StudentController::class, 'update'])->name('ubah.proses');
-    Route::delete('/hapus{id}', [StudentController::class, 'destroy'])->name('hapus');
-});
+    Route::get('/', function () {
+        return view('landing_page');
+    });
 
-Route::prefix('/kelola_siswa')->name('kelola_siswa.')->group(function(){
-    Route::get('/akun',[KelolaSiswaController::class, 'index'])->name('siswa');
-    Route::get('/tambah', [KelolaSiswaController::class, 'create'])->name('tambah');
-    Route::post('/tambah/proses', [KelolaSiswaController::class, 'store'])->name('tambah.proses');
-    Route::get('/ubah/{id}', [KelolaSiswaController::class, 'edit'])->name('ubah');
-    Route::patch('/ubah/{id}/proses', [KelolaSiswaController::class, 'update'])->name('ubah.proses');
-    Route::delete('/hapus{id}', [KelolaSiswaController::class, 'destroy'])->name('hapus');
-});
+    Route::get('login', function () {
+        return view('login');
+    })->name('login');
+ 
+    Route::post('/login', [UserController::class, 'loginProses'])->name('login.proses');
+
+    Route::post('/register', [UserController::class, 'guestLogin'])->name('register');
+
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+
+   
+    
+
+    Route::prefix('guest')->name('guest.')->group(function () {
+        Route::get('/dashboard/guest', [RepotController::class, 'index'])->name('dashboard_guest');
+        Route::get('/keluhan', [RepotController::class, 'create'])->name('keluhan');
+        Route::post('/keluhan-tambah', [RepotController::class, 'store'])->name('keluhan.proses');
+        Route::get('/komen', [CommentController::class, 'create'])->name('komen');
+        Route::post('/komen-tambah', [CommentController::class, 'store'])->name('komen.proses');
+        Route::get('/lihat-keluhan/{id}', [CommentController::class, 'show'])->name('keluhan.show');
+        Route::get('/progres/{userId}', [RepotController::class, 'showUserComplaints'])->name('progres');
+        Route::post('/repot/{id}/vote', [RepotController::class, 'vote'])->name('repot.vote');
+        Route::delete('/hapus/{id}/', [RepotController::class, 'destroy'])->name('hapus');
+    });
+
+    Route::prefix('staff')->name('staff.')->group(function() {
+        Route::get('dasboard/staff', [RepotController::class, 'indexStaff'])->name('dashboard_staff');
+        Route::get('proses/{id}', [RepotController::class, 'prosesStaff'])->name('proses');
+        Route::patch('staff/ubah/{id}', [RepotController::class, 'update'])->name('ubah.proses');
+        Route::put('selesai/{id}', [RepotController::class, 'done'])->name('selesai.proses');
+        Route::post('staff/history/{id}', [RepotController::class, 'storeHistory'])->name('history.store');
+        Route::get('repots/export', [RepotController::class, 'export'])->name('export');
+
+    });
+
+    Route::prefix('headstaff')->name('headstaff.')->group(function() {
+        Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('dashboard_admin');
+        Route::get('proses/{id}', [AdminController::class, 'prosesHeadStaff'])->name('proses');
+        Route::patch('headstaff/ubah/{id}', [AdminController::class, 'update'])->name('ubah.proses');
+        Route::put('headstaff/selesai/{id}', [AdminController::class, 'done'])->name('headstaff.selesai.proses');
+        Route::delete('/hapus/{id}', [UserController::class, 'destroy'])->name('hapus');
+        Route::get('/dashboard', [UserController::class, 'index'])->name('dashboard');
+        Route::post('/reset-password/{id}', [UserController::class, 'resetPassword'])->name('reset');
+        Route::get('/diagram', [UserController::class, 'diagram'])->name('diagram');
+        Route::get('/buat-akun', [UserController::class, 'create'])->name('create');
+        Route::post('/buat-akun/proses', [UserController::class, 'store'])->name('store');
+    });
+    
+    
+    // Route::prefix('headstaff')->name('headstaff.')->group(function() {
+       
+
+
+    // });
+
+
+    
+    
+  

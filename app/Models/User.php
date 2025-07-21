@@ -19,8 +19,9 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'pengurus',
-        // 'password',
+        'email',
+        'role',
+        'password',
     ];
 
     /**
@@ -29,7 +30,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        // 'password',
+        'password',
         'remember_token',
     ];
 
@@ -40,5 +41,16 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed',
     ];
+
+    public function repots()
+    {
+        return $this->hasMany(Repot::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Repot::class);
+    }
 }
